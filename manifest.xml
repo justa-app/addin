@@ -5,9 +5,9 @@
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0" xsi:type="MailApp">
     <Id>9dc89c08-d878-416b-a909-d424b02ecf06</Id>
     <Version>1.0.0.0</Version>
-    <ProviderName>Justa</ProviderName>
+    <ProviderName>JustA</ProviderName>
     <DefaultLocale>en-US</DefaultLocale>
-    <DisplayName DefaultValue="justa"/>
+    <DisplayName DefaultValue="JustA"/>
     <Description DefaultValue="A template to get started."/>
     <IconUrl DefaultValue="https://localhost:3000/assets/justa-logo.png"/>
     <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/justa-logo.png"/>
@@ -83,7 +83,7 @@
                 <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
             </bt:Urls>
             <bt:ShortStrings>
-                <bt:String id="GroupLabel" DefaultValue="Justa"/>
+                <bt:String id="GroupLabel" DefaultValue="JustA"/>
                 <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
                 <bt:String id="ActionButton.Label" DefaultValue="Perform an action"/>
             </bt:ShortStrings>
