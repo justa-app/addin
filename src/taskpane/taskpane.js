@@ -1,10 +1,10 @@
 Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
     document.getElementById("username").innerHTML = `Welcome ${Office.context.mailbox.userProfile.displayName}`
-    document.getElementById("search_full").onclick = full;
-    document.getElementById("search_tags").onclick = tags;
-    document.getElementById("search_summary").onclick = summary;
-    setInterval(function(){summary()}, 3000)
+//    document.getElementById("search_full").onclick = full;
+//    document.getElementById("search_tags").onclick = tags;
+//    document.getElementById("search_summary").onclick = summary;
+    setInterval(function(){summary()}, 5000)
   }
 });
 
@@ -14,7 +14,7 @@ export async function full() {
                 async function callback(result) {
                     let text = result.value.toLowerCase();
                     await knowledge_pieces_search(text);
-                    document.getElementById("debug_message").innerHTML = text;
+                    document.getElementById("debug_message").innerHTML = `querying engine ... $(text)`;
                 });
 }
 
@@ -38,7 +38,7 @@ export async function summary() {
                             let tags_res = await generate_tags(summary_res);
                             await knowledge_pieces_search(tags_res.join(' '))
                             let yy = await store_tags(tags_res);
-                            document.getElementById("debug_message").innerHTML = tags_res.join(' ');
+                            document.getElementById("debug_message").innerHTML = `querying engine ... (${tags_res.join(' ')})`;
                         });
 }
 
