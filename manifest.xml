@@ -8,12 +8,16 @@
     <ProviderName>JustA</ProviderName>
     <DefaultLocale>en-US</DefaultLocale>
     <DisplayName DefaultValue="JustA"/>
-    <Description DefaultValue="A template to get started."/>
+    <Description DefaultValue="Getting started with JustA"/>
     <IconUrl DefaultValue="https://localhost:3000/assets/justa-logo.png"/>
     <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/justa-logo.png"/>
     <SupportUrl DefaultValue="https://justa.app"/>
     <AppDomains>
-        <AppDomain>https://justa.app</AppDomain>
+        <AppDomain>https://searchengine2.dev.askjusta.com</AppDomain>
+        <AppDomain>dev.askjusta.com</AppDomain>
+        <AppDomain>http://18.196.183.219:3002</AppDomain>
+        <AppDomain>dualstack.main-alb-587084499.eu-central-1.elb.amazonaws.com</AppDomain>
+        <AppDomain>https://localhost:3000</AppDomain>
     </AppDomains>
     <Hosts>
         <Host Name="Mailbox"/>
@@ -81,6 +85,7 @@
             <bt:Urls>
                 <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
                 <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
+                <bt:Url id="taskpane_js_url" DefaultValue="https://localhost:3000/taskpane.html"/>
             </bt:Urls>
             <bt:ShortStrings>
                 <bt:String id="GroupLabel" DefaultValue="JustA"/>

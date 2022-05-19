@@ -1,124 +1,140 @@
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
- * See LICENSE in the project root for license information.
- */
-
-/* global document, Office */
-
 Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
-    document.getElementById("sideload-msg").style.display = "none";
-    document.getElementById("app-body").style.display = "flex";
-    document.getElementById("to_suggestion").onclick = send_to_suggestion;
-    setInterval(function(){run()}, 1000)
+    document.getElementById("username").innerHTML = `Welcome ${Office.context.mailbox.userProfile.displayName}`
+    document.getElementById("search_full").onclick = full;
+    document.getElementById("search_tags").onclick = tags;
+    document.getElementById("search_summary").onclick = summary;
+    setInterval(function(){summary()}, 3000)
   }
 });
 
-export async function run() {
-
+export async function full() {
     Office.context.mailbox.item.body.getAsync(
-    "text",
-    { asyncContext: "This is passed to the callback" },
-    function callback(result) {
-        if (result.value.toLowerCase().replace("  ", " ").includes('gdpr') == true) {
-          document.getElementById("item-subject").innerHTML = gdpr_definition
-          show_suggestion()
-//          let html_body = result.value.replace('gdpr', '<span style="background-color:#00FEFE">gdpr</span>')
-//          let body = '<div>' + html_body + '</div>'
-//          body = body.replace(/\s+/g, ' ').trim();
-//          Office.context.mailbox.item.body.setAsync(
-//                                                            body,
-//                                                            {coercionType: Office.CoercionType.Html});
+                "text",
+                async function callback(result) {
+                    let text = result.value.toLowerCase();
+                    await knowledge_pieces_search(text);
+                    document.getElementById("debug_message").innerHTML = text;
+                });
+}
 
+export async function tags() {
+    Office.context.mailbox.item.body.getAsync(
+                    "text",
+                    async function callback(result) {
+                        let text = result.value.toLowerCase();
+                          let tags_res = await generate_tags(text);
+                          await knowledge_pieces_search(tags_res.join(' '))
+                          document.getElementById("debug_message").innerHTML = tags_res.join(' ');
+                    });
+}
 
-        } else if (result.value.toLowerCase().replace("  ", " ").includes('soc2') == true) {
-          document.getElementById("item-subject").innerHTML = soc2_definition
-          show_suggestion()
-//          let html_body = result.value.replace('soc2', '<span style="background-color:#00FEFE">soc2</span>')
-//          let body = '<div>' + html_body + '</div>'
-//          body = body.replace(/\s+/g, ' ').trim();
-//          Office.context.mailbox.item.body.setAsync(
-//                                                  body,
-//                                                  {coercionType: Office.CoercionType.Html});
+export async function summary() {
+    Office.context.mailbox.item.body.getAsync(
+                        "text",
+                        async function callback(result) {
+                            let text = result.value.toLowerCase();
+                            let summary_res = await generate_summary(text)
+                            let tags_res = await generate_tags(summary_res);
+                            await knowledge_pieces_search(tags_res.join(' '))
+                            let yy = await store_tags(tags_res);
+                            document.getElementById("debug_message").innerHTML = tags_res.join(' ');
+                        });
+}
 
-
-        } else if (result.value.toLowerCase().replace("  ", " ").includes('hipaa') == true) {
-          document.getElementById("item-subject").innerHTML = hipaa_definition
-          show_suggestion()
-
-//          let html_body = result.value.replace('hipaa', '<span style="background-color:#00FEFE">hipaa</span>')
-//          let body = '<div>' + html_body + '</div>'
-//
-//          body = body.replace(/\s+/g, ' ').trim();
-//
-//          Office.context.mailbox.item.body.setAsync(
-//                                        body,
-//                                        {coercionType: Office.CoercionType.Html});
+async function knowledge_pieces_search(text) {
+    try {
+        let resource = `https://addin.dev.askjusta.com/search?q=${text}`
+        let init = {
+            'method': 'GET',
+            'headers': {
+                            'Content-Type': 'application/json',
+                       }
         }
-        else {
-          if (result.value.length == 1){
-                document.getElementById("item-subject").innerHTML = ''
-          } else {
-                document.getElementById("item-subject").innerHTML = 'analysing...'
-          }
-          hide_suggestion()
+
+        let response = await fetch(resource, init);
+        let items = await response.json();
+
+        let knowledge_pieces_div = document.getElementById("knowledge_pieces");
+
+        while (knowledge_pieces_div.hasChildNodes()) {
+          knowledge_pieces_div.removeChild(knowledge_pieces_div.firstChild);
         }
-    });
+
+        let title = document.createElement('div');
+        title.innerHTML = 'We found somethings that might be useful'
+        title.style.cssText = `
+        color: #2955c1; font-size: 1.25rem; font-family: Helvetica,sans-serif; font-weight: 500;
+         line-height: 1.6; margin-bottom: 20px;
+        `
+        knowledge_pieces_div.appendChild(title);
+
+        let ul = document.createElement('ul');
+        knowledge_pieces_div.appendChild(ul);
+
+        items.forEach(item => {
+            let li = document.createElement('li');
+
+            let html_item = `
+            <a href=${item.url} style="margin-top: 0px; margin-bottom: 0px">${item.title}</a>
+            <h5 style="margin-top: 0px; margin-bottom: 20px">created_by: ${item.created_by}, type: ${item.type}</h5>
+            `
+            li.innerHTML = html_item;
+
+            ul.appendChild(li);
+        });
+    }
+    catch (error) {
+        knowledge_pieces_div.innerHTML = error;
+//        return [["ERROR", error.message]];
+    }
 }
 
-export async function send_to_suggestion() {
-    Office.context.mailbox.item.to.setAsync( ['oren@justa.app'] );
+async function generate_summary(text) {
+    let resource = `https://addin.dev.askjusta.com/summary`
+    let init = {
+        'method': 'POST',
+        'headers': {
+                        'Content-Type': 'application/json',
+                   },
+        'body': text
+    }
+
+    let response = await fetch(resource, init);
+    let summary = await response.json();
+
+    return summary
 }
 
-export function show_suggestion() {
-    document.getElementById('to_suggestion').style.display = 'block';
+async function generate_tags(text) {
+    let resource = `https://addin.dev.askjusta.com/keywords`
+    let init = {
+        'method': 'POST',
+        'headers': {
+                        'Content-Type': 'application/json',
+                   },
+        'body': text
+    }
+
+    let response = await fetch(resource, init);
+    let tags = await response.json();
+
+    return tags
 }
 
-export function hide_suggestion() {
-    document.getElementById('to_suggestion').style.display = 'none';
+async function store_tags(tags) {
+    let resource = `https://addin.dev.askjusta.com/save`
+    let init = {
+        'method': 'POST',
+        'headers': {
+                        'Content-Type': 'application/json',
+                   },
+        'body': JSON.stringify({
+            'user_id': Office.context.mailbox.userProfile.emailAddress,
+            'email_id': Office.context.mailbox.item.conversationId,
+            'tags': tags
+        })
+    }
+
+    await fetch(resource, init);
 }
-
-const gdpr_definition = `
-<h1>JustA.app analysis</h1>
-<h2>General Information</h2>
-General Data Protection Regulation requirements prohibit companies from hiding behind illegible terms and
-conditions that are difficult to understand. Instead, GDPR compliance requires companies to clearly define
-their data privacy policies and make them easily accessible.
-
-<h2>Usable Resources</h2>
-We also found for you some relevant and usable information:
-   <ul>
-    <li><a href="https://gdpr.eu/">Guidance</a></li>
-    <li><a href="https://gdpr-info.eu/">Insight</a></li>
-  </ul>
-`
-
-const soc2_definition = `
-<h1>JustA.app analysis</h1>
-<h2>General Information</h2>
-SOC 2 is a voluntary compliance standard for service organizations, developed by the American Institute of CPAs
- (AICPA), which specifies how organizations should manage customer data. The standard is based on the following
-  Trust Services Criteria: security, availability, processing integrity, confidentiality, privacy.
-
-<h2>Usable Resources</h2>
-  We also found for you some relevant and usable information:
-   <ul>
-    <li><a href="https://www.imperva.com/learn/data-security/soc-2-compliance/">SOC 2 Compliance</a></li>
-    <li><a href="https://www.checkpoint.com/cyber-hub/cyber-security/what-is-soc-2-compliance/">What is SOC 2 Compliance?</a></li>
-    <li><a href="https://www.nextep.co.il/soc2/">Who needs?</a></li>
-  </ul>
-`
-
-const hipaa_definition = `
-<h1>JustA.app analysis</h1>
-<h2>General Information</h2>
-HIPAA stands for Health Insurance Portability and Accountability Act.
-HIPAA Compliance is the process by which covered entities need to protect and secure
-a patient's healthcare data or Protected Health Information.
-
-<h2>Usable Resources</h2>
-We also found for you some relevant and usable information:
-   <ul>
-    <li><a href="https://www.hhs.gov/hipaa/index.html">Health information privacy</a></li>
-  </ul>
-`

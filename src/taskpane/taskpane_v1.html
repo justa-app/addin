@@ -1,0 +1,52 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
+<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JustA Task Pane Add-in</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+    <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
+    <link rel="stylesheet"
+          href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css"/>
+
+    <!-- Template styles -->
+    <link href="taskpane.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body class="ms-font-m ms-welcome ms-Fabric">
+<header style="background-color:white;text-align:center">
+    <a href="https://www.justa.app">
+        <img width="90" height="90" src="../../assets/justa-logo.png" alt="JustA" title="JustA.app"/>
+    </a>
+    <h4>Knowledge mining in action...</h4>
+    <hr/>
+</header>
+<section id="sideload-msg" class="ms-welcome__main">
+    <h2 class="ms-font-xl">Please sideload your add-in...</h2>
+</section>
+<main id="app-body" style="display: none;">
+    <span>
+        <div role="button" id="search" class="ms-Button ms-Button--hero">
+            <p/>
+            <span class="ms-Button-label">search</span>
+        </div>
+        <div style="">
+            <p><label id="item-subject"></label></p>
+        </div>
+        <div role="button" id="to_suggestion" class="ms-Button ms-Button--hero" style="display:none">
+            <p/>
+            <label id="suggestion">We think that sending your question to Yohai Azriel could be more efficient</label>
+            <span class="ms-Button-label">Do you want to accept our suggestion ?</span>
+        </div>
+    </span>
+</main>
+</body>
+</html>

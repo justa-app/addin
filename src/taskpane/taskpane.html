@@ -1,46 +1,54 @@
-<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
-<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
-
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JustA Task Pane Add-in</title>
-
-    <!-- Office JavaScript API -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
-
-    <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
-    <link rel="stylesheet"
-          href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css"/>
-
-    <!-- Template styles -->
     <link href="taskpane.css" rel="stylesheet" type="text/css"/>
 </head>
+<body>
+<header style="text-align:left">
+    <div class="content" style="display: ">
+        <span>
+            <a href="https://www.justa.app">
+                <img width="45" height="45" src="../../assets/justa-logo.png" alt="JustA" title="JustA.app"/>
+            </a>
+        </span>
+        <span style="font-size:14.0pt; padding-left: 5px;">Knowledge mining in action...</span>
+        <hr/>
+        <div class="content">
+            <p><label id="username"></label></p>
+        </div>
+        <hr/>
+    </div>
 
-<body class="ms-font-m ms-welcome ms-Fabric">
-<header class="ms-welcome__header ms-bgColor-neutralLighter">
-    <img width="48" height="48" src="../../assets/justa-logo.png" alt="JustA" title="JustA.app"/>
-    <h4>Knowledge mining in action...</h4>
+    <div>
+        <h4>Search documents</h4>
+    </div>
+
+    <nav>
+        <label for="id-show-menu" class="show-menu">
+            <div class="nav-icon">
+                <img width="32" height="32" src="../../assets/search-logo.png" alt="JustA" title="JustA.app"/>
+            </div>
+        </label>
+        <input type="checkbox" id="id-show-menu" class="checkbox-menu" role="button">
+        <div class="menu-block">
+            <ul class="navUL">
+                <li><a id="search_full" href="javascript:;">full</a></li>
+                <li><a id="search_tags" href="javascript:;">tags</a></li>
+                <li><a id="search_summary" href="javascript:;">summary</a></li>
+            </ul>
+        </div>
+    </nav>
 </header>
-<section id="sideload-msg" class="ms-welcome__main">
-    <h2 class="ms-font-xl">Please sideload your add-in...</h2>
-</section>
-<main id="app-body" style="display: none;">
-    <span>
-        <div style="">
-            <p><label id="item-subject"></label></p>
-        </div>
-        <div role="button" id="to_suggestion" class="ms-Button ms-Button--hero" style="display:none">
-            <p/>
-            <label id="suggestion">We think that sending your question to Oren Minster could be more efficient</label>
-            <span class="ms-Button-label">Do you want to accept our suggestion ?</span>
-        </div>
-    </span>
+<main>
+    <div class="content">
+        <p><label id="debug_message"></label></p>
+    </div>
+
+    <div class="content">
+        <p><label id="knowledge_pieces"></label></p>
+    </div>
+
 </main>
 </body>
-
 </html>
